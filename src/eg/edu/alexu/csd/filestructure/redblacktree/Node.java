@@ -5,7 +5,7 @@ public class Node <T extends Comparable<T>, V> implements INode <T,V> {
     private INode<T, V> parent;
     private INode<T, V> leftChild;
     private INode<T, V> rightChild;
-    private boolean color = RED;
+    private boolean color;
     private T key;
     private V value;
 

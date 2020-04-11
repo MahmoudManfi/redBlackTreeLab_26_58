@@ -61,12 +61,6 @@ public class RedBlackTree<T extends Comparable<T> , V > implements IRedBlackTree
 
     }
 
-    private INode<T,V> getParentSibling (INode <T, V> parent, INode <T, V> child) {
-
-        return (parent.getLeftChild() == child) ? parent.getRightChild() : parent.getLeftChild() ;
-
-    }
-
     private void newNode(INode<T,V> node, T key, V value) {
 
         node.setKey(key);
@@ -76,13 +70,45 @@ public class RedBlackTree<T extends Comparable<T> , V > implements IRedBlackTree
 
     }
 
+    @Override
+    public void insert(T key, V value) {
+
+        if (isEmpty()) {
+
+            newNode(getRoot(),key,value);  return;
+
+        }
+
+        INode<T,V> node = find(getRoot(),key); // i search for the place where should the new node be
+
+        if (!node.isNull()) { // i search for the node and find the same key so i upgrade its value
+
+            node.setValue(value);
+
+        } else {
+
+            newNode(node,key,value);
+
+            node.setColor(INode.RED);
+
+            recolorAndRotation(node);
+
+        }
+
+    }
+
+    @Override
+    public boolean delete(T key) {
+        return false;
+    }
+
     private void recolorAndRotation(INode <T, V> node) {
 
         INode<T,V> parent = node.getParent();  INode<T,V> grandParent = parent.getParent();
 
         if (grandParent == null || parent.getColor() == INode.BLACK) return;
 
-        INode<T,V> parentSibling = getParentSibling(grandParent,parent);
+        INode<T,V> parentSibling = getSibling(grandParent,parent);
 
         if (parentSibling.getColor() == INode.RED) {
 
@@ -98,39 +124,78 @@ public class RedBlackTree<T extends Comparable<T> , V > implements IRedBlackTree
 
         } else {
 
-            // 7amza ana mesh mot5yl hn3mel eh hena fmstnyk tshr7ly
-            // hena el mfrod el rotation
+            rotation(grandParent,parent,node);
 
         }
 
     }
 
-    @Override
-    public void insert(T key, V value) {
+    private INode<T,V> getSibling (INode <T, V> parent, INode <T, V> child) {
 
-        if (isEmpty()) {
+        return (parent.getLeftChild() == child) ? parent.getRightChild() : parent.getLeftChild() ;
 
-            newNode(getRoot(),key,value);
-            getRoot().setColor(INode.BLACK); return;
+    }
 
-        }
+    private void rotation(INode<T,V> grandParent, INode<T,V> parent, INode<T,V> node) {
 
-        INode<T,V> node = find(getRoot(),key); // i search for the place where should the new node be
+        int compare = grandParent.getKey().compareTo(parent.getKey()); // to compare the grandparent with parent
 
-        if (!node.isNull()) { // i search for the node and find the same key so i upgrade its value
+        if (compare == parent.getKey().compareTo(node.getKey())) {
 
-            node.setValue(value);
+            parent.setParent(grandParent.getParent());
+
+            grandParent.setColor(INode.RED);
+            parent.setColor(INode.BLACK);
+
+            INode<T, V> sibling = getSibling(parent,node);
+
+            sibling.setParent(grandParent);
+            grandParent.setParent(parent);
+
+            if (compare < 0) {
+
+                grandParent.setRightChild(sibling);
+
+                parent.setLeftChild(grandParent);
+
+
+            } else {
+
+                grandParent.setLeftChild(sibling);
+
+                parent.setRightChild(grandParent);
+
+            }
 
         } else {
 
-            recolorAndRotation(node);
+            node.setParent(grandParent.getParent());
+
+            INode<T, V> leftChild = node.getLeftChild();
+            INode<T, V> rightChild = node.getRightChild();
+
+            if (compare < 0) {
+
+                node.setLeftChild(grandParent);
+                node.setRightChild(parent);
+
+                grandParent.setLeftChild(rightChild);
+
+                parent.setRightChild(leftChild);
+
+            } else {
+
+                node.setRightChild(grandParent);
+                node.setLeftChild(parent);
+
+                grandParent.setRightChild(rightChild);
+
+                parent.setLeftChild(leftChild);
+
+            }
 
         }
 
     }
 
-    @Override
-    public boolean delete(T key) {
-        return false;
-    }
 }
