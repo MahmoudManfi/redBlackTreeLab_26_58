@@ -9,6 +9,14 @@ public class Node <T extends Comparable<T>, V> implements INode <T,V> {
     private T key;
     private V value;
 
+    Node () { }
+
+    Node (T key, V value) {
+
+        this.key = key; this.value = value;
+
+    }
+
     @Override
     public void setParent(INode<T, V> parent) {
 

@@ -527,8 +527,7 @@ public class UnitTest {
 					list.add(key);
 				redBlackTree.insert(key, "soso" + key);
 			}
-			
-			for (Integer elem : list) 
+			for (Integer elem : list)
 				Assert.assertTrue(redBlackTree.delete(elem));
 			INode<Integer, String> node = redBlackTree.getRoot();
 			if ((node == null || node.isNull()))
