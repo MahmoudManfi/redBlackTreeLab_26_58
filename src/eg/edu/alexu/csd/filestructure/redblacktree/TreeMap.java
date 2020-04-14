@@ -100,7 +100,8 @@ public class TreeMap <T extends Comparable<T> , V > implements ITreeMap<T,V> {
     @Override
     public boolean containsValue(V value) {
         throwException(value);
-        Set<Map.Entry<T,V>> entries = entrySet();
+        Collection<Map.Entry<T,V>> entries = new ArrayList<>();
+        traverse(redBlackTree.getRoot(),entries);
         Iterator<Map.Entry<T,V>> iterator  = entries.iterator();
 
         while (iterator.hasNext()) {
@@ -109,20 +110,20 @@ public class TreeMap <T extends Comparable<T> , V > implements ITreeMap<T,V> {
         return false;
     }
 
+    private void traverse(INode<T,V> node,Collection<Map.Entry<T,V>> entries) {
+
+        if (node.isNull()) return;
+
+        traverse(node.getLeftChild(),entries);
+        entries.add(buildEntry(node));
+        traverse(node.getRightChild(),entries);
+
+    }
+
     @Override
     public Set<Map.Entry<T, V>> entrySet() {
         Set<Map.Entry<T,V>> entries = new LinkedHashSet<>(size());
-        Stack<INode<T,V>> stack = new Stack<>();
-        INode<T,V> node = redBlackTree.getRoot();
-        while(!node.isNull()||!stack.empty()) {
-            while(!node.isNull()){
-                stack.push(node);
-                node = node.getLeftChild();
-            }
-            node = stack.peek(); stack.pop();
-            entries.add(buildEntry(node));
-            node = node.getRightChild();
-        }
+        traverse(redBlackTree.getRoot(),entries);
         return entries;
     }
 
@@ -160,9 +161,10 @@ public class TreeMap <T extends Comparable<T> , V > implements ITreeMap<T,V> {
     public ArrayList<Map.Entry<T, V>> headMap(T toKey, boolean inclusive) {
 
         ArrayList<Map.Entry<T,V>> entries = new ArrayList<>();
-        Set<Map.Entry<T,V>> set = entrySet();
+        Collection<Map.Entry<T,V>> entries1 = new ArrayList<>();
+        traverse(redBlackTree.getRoot(),entries1);
 
-        Iterator<Map.Entry<T,V>> itr = set.iterator();
+        Iterator<Map.Entry<T,V>> itr = entries1.iterator();
         while (itr.hasNext())
         {
             Map.Entry<T,V> entry = itr.next(); int compare = toKey.compareTo(entry.getKey());
@@ -180,7 +182,9 @@ public class TreeMap <T extends Comparable<T> , V > implements ITreeMap<T,V> {
     public Set<T> keySet() {
 
         Set<T> set = new LinkedHashSet<>(size());
-        Iterator<Map.Entry<T,V>> iterator = entrySet().iterator();
+        Collection<Map.Entry<T,V>> entries = new ArrayList<>();
+        traverse(redBlackTree.getRoot(),entries);
+        Iterator<Map.Entry<T,V>> iterator = entries.iterator();
 
         while (iterator.hasNext()) {
             set.add(iterator.next().getKey());
@@ -251,7 +255,9 @@ public class TreeMap <T extends Comparable<T> , V > implements ITreeMap<T,V> {
     @Override
     public Collection<V> values() {
         Collection<V>  collections = new ArrayList<>(size());
-        Iterator<Map.Entry<T,V>> iterator = entrySet().iterator();
+        Collection<Map.Entry<T,V>> entries = new ArrayList<>();
+        traverse(redBlackTree.getRoot(),entries);
+        Iterator<Map.Entry<T,V>> iterator = entries.iterator();
 
         while (iterator.hasNext()) {
             collections.add(iterator.next().getValue());

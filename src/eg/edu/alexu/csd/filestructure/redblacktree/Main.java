@@ -15,23 +15,21 @@ public class Main {
 
         RedBlackTree<Integer,Object> tree = new RedBlackTree<>();
         Random r = new Random();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 400; i++) {
             Random random = new Random();
             for (int j = 0; j < 200000; j++) {
                 int key = random.nextInt(200000);
                 tree.insert(key, "Manfi" + key);
             }
-            for (int k = 0; k < 400; k++) {
-                int n = r.nextInt(20000);
-                long start = System.currentTimeMillis();
-                for (int j = 0; j < n; j++) {
-                    int  key = random.nextInt(200000);
-                    tree.search(key);
-                }
-                long end = System.currentTimeMillis();
-                Map.put(n,(end - start));
+            int n = r.nextInt(20000);
+            long start = System.currentTimeMillis();
+            for (int j = 0; j < n; j++) {
+                int  key = random.nextInt(200000);
+                tree.delete(key);
             }
-
+            long end = System.currentTimeMillis();
+            Map.put(n,(end - start));
+            tree.clear();
         }
 
         Set<java.util.Map.Entry<Integer, Object>> set = Map.entrySet();
